@@ -151,18 +151,34 @@ public class LoginForm extends javax.swing.JFrame {
     
     private void login() {
         String correo = txtCorreo.getText();
-        String pass = new String(txtContrasenia.getPassword());
+        String pass = new String(txtContrasenia.getPassword()).trim();
 
+        if (correo.isEmpty() || pass.isEmpty()) {
+                        
+            JOptionPane.showMessageDialog(
+                this,
+                "Por favor, ingresa tu correo y contraseña.",
+                "Campos incompletos",
+                JOptionPane.WARNING_MESSAGE
+            );
+            return; // Detiene el login
+        }
+        
         if (usuarioService.login(correo, pass)) {
-            JOptionPane.showMessageDialog(this, "Bienvenido al sistema");
-            // Ir al Dashboard
+            
             new DashboardForm().setVisible(true);
 
-            dispose(); // cierra el login
+            dispose(); // Cerrar login
+
         } else {
-            JOptionPane.showMessageDialog(this, "Credenciales incorrectas");
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Correo o contraseña incorrectos.",
+                    "Acceso denegado",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
-    }
+    }    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
