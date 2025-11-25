@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -85,6 +86,17 @@ public class PanelImagenProducto extends JPanel {
                 // Aquí se usa id_Producto y YA NO debe ser 0
                 ProductoDAO dao = new ProductoDAO();
                 boolean ok = dao.actualizarFotoProducto(id_Producto, fotoEnBytes);
+                
+                try {
+                    String ruta = "src/img_productos/" + id_Producto + ".jpg";
+                    FileOutputStream fos = new FileOutputStream(ruta);
+                    fos.write(fotoEnBytes);
+                    fos.close();
+                    System.out.println("Imagen guardada en: " + ruta);
+
+                } catch (Exception ex) {
+                    System.out.println("Error guardando imagen en carpeta: " + ex.getMessage());
+                }
 
                 if (ok) {
                     JOptionPane.showMessageDialog(this, "Imagen guardada correctamente.");
@@ -100,6 +112,20 @@ public class PanelImagenProducto extends JPanel {
 
     private void mostrarImagenGuardada() {
         
+        try {
+
+        // 1️⃣ Buscar archivo físico
+        String ruta = "src/img_productos/" + id_Producto + ".jpg";
+        File file = new File(ruta);
+
+        if (file.exists()) {
+            ImageIcon icon = new ImageIcon(ruta);
+            Image img = icon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+            lblImagen.setIcon(new ImageIcon(img));
+            lblImagen.setText("");
+            return;
+        }
+        
         if (id_Producto <= 0) return; // << AGREGAR ESTO, evita intentos con ID = 0
 
         ProductoDAO dao = new ProductoDAO();
@@ -112,6 +138,18 @@ public class PanelImagenProducto extends JPanel {
             lblImagen.setIcon(new ImageIcon(img));
             lblImagen.setText("");
         }
+        // Guardar la imagen en carpeta para uso futuro
+            try {
+                FileOutputStream fos = new FileOutputStream(ruta);
+                fos.write(datos);
+                fos.close();
+            } catch (Exception e) {
+                System.out.println("Error guardando copia local: " + e.getMessage());
+            }
+    
+    } catch (Exception e) {
+        System.out.println("Error mostrarImagenGuardada: " + e.getMessage());
+    }        
     }
     
     

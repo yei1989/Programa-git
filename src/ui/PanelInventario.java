@@ -199,27 +199,38 @@ public class PanelInventario extends javax.swing.JPanel {
             
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 
-                if (evt.getClickCount() == 2) {
-                    
-                    int r = tabla.getSelectedRow();
-                    if (r >= 0) {
-                        
-                        txtNombre.setText(String.valueOf(modelo.getValueAt(r, 1)));
-                        txtReferencia.setText(String.valueOf(modelo.getValueAt(r, 2)));
-                        txtPrecio.setText(String.valueOf(modelo.getValueAt(r, 3)));
-                        txtStock.setText(String.valueOf(modelo.getValueAt(r, 4)));
-                        String material = String.valueOf(modelo.getValueAt(r, 5));
-                        cbMaterial.setSelectedItem(material);
-                        selectMode("INV_MOD");
-                        
-                        int id_producto = Integer.parseInt(String.valueOf(modelo.getValueAt(r, 0)));
+                int r = tabla.getSelectedRow();
+        
+                // -------------------------------------
+                // MOSTRAR FOTO AL SELECCIONAR PRODUCTO
+                // -------------------------------------
+                if (r >= 0) {
+                    int id_producto = Integer.parseInt(
+                        String.valueOf(modelo.getValueAt(r, 0))
+                    );
 
-                        remove(panelImagen);
-                        panelImagen = new PanelImagenProducto(id_producto);
-                        panelImagen.setBounds(800, 50, 220, 260);
-                        add(panelImagen);
-                        repaint();
-                    }
+                    // Refrescar panel de imagen
+                    remove(panelImagen);
+                    panelImagen = new PanelImagenProducto(id_producto);
+                    panelImagen.setBounds(800, 50, 220, 260);
+                    add(panelImagen);
+                    repaint();
+                }
+
+                // -------------------------------------
+                // DOBLE CLIC PARA MODIFICAR PRODUCTO
+                // -------------------------------------
+                if (evt.getClickCount() == 2) {
+
+                    txtNombre.setText(String.valueOf(modelo.getValueAt(r, 1)));
+                    txtReferencia.setText(String.valueOf(modelo.getValueAt(r, 2)));
+                    txtPrecio.setText(String.valueOf(modelo.getValueAt(r, 3)));
+                    txtStock.setText(String.valueOf(modelo.getValueAt(r, 4)));
+
+                    String material = String.valueOf(modelo.getValueAt(r, 5));
+                    cbMaterial.setSelectedItem(material);
+
+                    selectMode("INV_MOD");
                 }
             }
         });

@@ -123,7 +123,7 @@ public class RegisterForm extends javax.swing.JFrame {
 
         txtCorreo = new JTextField();
         txtCorreo.setBounds(180, 200, 180, 25);
-        txtCorreo.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        txtCorreo.setFont(new java.awt.Font("Segoe UI", 0, 10));
         txtCorreo.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
         panelDer.add(txtCorreo);
 
