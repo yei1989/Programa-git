@@ -70,11 +70,9 @@ public class LoginForm extends javax.swing.JFrame {
         lblSub.setFont(new java.awt.Font("Segoe UI", 0, 12));
         lblSub.setForeground(java.awt.Color.WHITE);
         panelIzq.add(lblSub);
-        
-        // -----------------------------------------
+                
         // PANEL DERECHO (FORMULARIO)
-        // -----------------------------------------
-        
+                
         javax.swing.JPanel panelDer = new javax.swing.JPanel();
         panelDer.setLayout(null);
         panelDer.setBounds(350, 0, 500, 550);

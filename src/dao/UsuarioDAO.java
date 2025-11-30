@@ -18,7 +18,8 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class UsuarioDAO {
     
-    // AUTENTICACIÓN (LOGIN)
+    // AUTENTICACIÓN  BCrypt(LOGIN)
+    
     public boolean autenticar(String correo, String contrasenia) {
 
         String sql = "SELECT contrasenia FROM Usuario WHERE correoelectronico = ?";

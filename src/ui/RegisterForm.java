@@ -26,11 +26,9 @@ public class RegisterForm extends javax.swing.JFrame {
         setSize(850, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
-        
-        // -----------------------------------------
+                
         // PANEL IZQUIERDO (COLOR PRINCIPAL)
-        // -----------------------------------------
-        
+                
         javax.swing.JPanel panelIzq = new javax.swing.JPanel();
         panelIzq.setLayout(null);
         panelIzq.setBackground(new java.awt.Color(13, 71, 161)); // Azul moderno
@@ -65,10 +63,8 @@ public class RegisterForm extends javax.swing.JFrame {
         lblSub.setForeground(java.awt.Color.WHITE);
         panelIzq.add(lblSub);
         
-        // -----------------------------------------
         // PANEL DERECHO (FORMULARIO)
-        // -----------------------------------------
-        
+                
         javax.swing.JPanel panelDer = new javax.swing.JPanel();
         panelDer.setLayout(null);
         panelDer.setBounds(350, 0, 500, 550);
