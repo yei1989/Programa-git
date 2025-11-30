@@ -90,7 +90,7 @@ public class RegisterForm extends javax.swing.JFrame {
 
         txtDocumento = new JTextField();
         txtDocumento.setBounds(180, 80, 180, 25);
-        txtDocumento.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        txtDocumento.setFont(new java.awt.Font("Segoe UI", 0, 12));
         txtDocumento.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
         panelDer.add(txtDocumento);
         
@@ -101,7 +101,7 @@ public class RegisterForm extends javax.swing.JFrame {
 
         txtPrimerNombre = new JTextField();
         txtPrimerNombre.setBounds(180, 120, 180, 25);
-        txtPrimerNombre.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        txtPrimerNombre.setFont(new java.awt.Font("Segoe UI", 0, 12));
         txtPrimerNombre.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
         panelDer.add(txtPrimerNombre);
 
@@ -112,7 +112,7 @@ public class RegisterForm extends javax.swing.JFrame {
 
         txtPrimerApellido = new JTextField();
         txtPrimerApellido.setBounds(180, 160, 180, 25);
-        txtPrimerApellido.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        txtPrimerApellido.setFont(new java.awt.Font("Segoe UI", 0, 12));
         txtPrimerApellido.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
         panelDer.add(txtPrimerApellido);
         
@@ -134,7 +134,7 @@ public class RegisterForm extends javax.swing.JFrame {
 
         txtContrasenia = new JPasswordField();
         txtContrasenia.setBounds(180, 240, 180, 25);
-        txtContrasenia.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        txtContrasenia.setFont(new java.awt.Font("Segoe UI", 0, 12));
         txtContrasenia.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
         panelDer.add(txtContrasenia);
 
@@ -170,20 +170,33 @@ public class RegisterForm extends javax.swing.JFrame {
     }
 
     private void registrar() {
+            // Validar
+        if (txtCorreo.getText().isEmpty() ||
+            txtDocumento.getText().isEmpty() ||
+            txtPrimerNombre.getText().isEmpty() ||
+            txtPrimerApellido.getText().isEmpty() ||
+            txtContrasenia.getPassword().length == 0) {
+
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
+            return;
+        }
+
         Usuario u = new Usuario();
-        u.setCorreo(txtCorreo.getText());
-        u.setDocumentoUsuario(txtDocumento.getText());
-        u.setPrimerNombre(txtPrimerNombre.getText());
-        u.setPrimerApellido(txtPrimerApellido.getText());
+        u.setCorreo(txtCorreo.getText().trim());
+        u.setDocumentoUsuario(txtDocumento.getText().trim());
+        u.setPrimerNombre(txtPrimerNombre.getText().trim());
+        u.setPrimerApellido(txtPrimerApellido.getText().trim());
         u.setContrasenia(new String(txtContrasenia.getPassword()));
 
         boolean registrado = usuarioService.registrar(u);
 
         if (registrado) {
             JOptionPane.showMessageDialog(this, "Usuario registrado correctamente");
+
+            // Abrir SOLO login (esto es lo correcto)
             new LoginForm().setVisible(true);
-            new DashboardForm().setVisible(true);
             dispose();
+
         } else {
             JOptionPane.showMessageDialog(this, "Error registrando usuario");
         }

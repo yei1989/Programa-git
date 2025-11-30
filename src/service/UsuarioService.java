@@ -20,6 +20,13 @@ public class UsuarioService {
     }
 
     public boolean registrar(Usuario u) {
-        return usuarioDAO.registrar(u);   // ✔ CORRECTO
+
+        // Validación mínima
+        if (u.getCorreo() == null || u.getCorreo().isEmpty()) return false;
+        if (u.getDocumentoUsuario() == null || u.getDocumentoUsuario().isEmpty()) return false;
+        if (u.getPrimerNombre() == null || u.getPrimerNombre().isEmpty()) return false;
+        if (u.getPrimerApellido() == null || u.getPrimerApellido().isEmpty()) return false;
+
+        return usuarioDAO.registrar(u);
     }
 }

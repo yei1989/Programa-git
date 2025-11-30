@@ -9,13 +9,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
+import model.Cliente;
 /**
  *
  * @author PORTATIL
  */
 public class ClienteDAO {
     
+       
     //Contar CLientes
     public int contarClientes() {
         String sql = "SELECT COUNT(*) FROM cliente";
@@ -41,7 +46,14 @@ public class ClienteDAO {
         model.addColumn("Nombres");
         model.addColumn("Apellidos");
         model.addColumn("Cedula");
-        String sql = "SELECT id_cliente, nombres_cliente, apellidos_clientes, documento_cliente FROM cliente";
+        model.addColumn("Tipo Cliente");
+        
+        String sql = 
+            "SELECT c.id_cliente, c.nombres_cliente, c.apellidos_clientes, " +
+            "c.documento_cliente, t.tipo_cliente " +
+            "FROM cliente c " +
+            "LEFT JOIN tipo_cliente t ON c.id_tipo_cliente = t.id_tipo_cliente";
+              
         try (Connection c = ConexionBD.getConexion();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -50,7 +62,8 @@ public class ClienteDAO {
                     rs.getInt("id_cliente"),
                     rs.getString("nombres_cliente"),
                     rs.getString("apellidos_clientes"),
-                    rs.getString("documento_cliente")
+                    rs.getString("documento_cliente"),
+                    rs.getNString("tipo_cliente")
                 });
             }
             return model;
@@ -69,7 +82,7 @@ public class ClienteDAO {
         model.addColumn("Apellidos");
         model.addColumn("Cedula");
         
-        String sql = "SELECT id_cliente, nombres_cliente, apellidos_clientes, documento_cliente FROM cliente WHERE nombres_cliente LIKE ? OR apellidos_clientes LIKE ? OR documento_cliente LIKE ?";
+        String sql = "SELECT * FROM cliente WHERE nombres_cliente LIKE ? OR apellidos_clientes LIKE ? OR documento_cliente LIKE ? ";
         
         try (Connection c = ConexionBD.getConexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -77,6 +90,7 @@ public class ClienteDAO {
             ps.setString(1, "%" + criterio + "%");
             ps.setString(2, "%" + criterio + "%");
             ps.setString(3, "%" + criterio + "%");
+            
             ResultSet rs = ps.executeQuery();
             
             while (rs.next()) {
@@ -84,7 +98,8 @@ public class ClienteDAO {
                     rs.getInt("id_cliente"),
                     rs.getString("nombres_cliente"),
                     rs.getString("apellidos_clientes"),
-                    rs.getString("documento_cliente")
+                    rs.getString("documento_cliente"),
+                    
                 });
             }
             rs.close();
@@ -95,9 +110,11 @@ public class ClienteDAO {
         }
     }
     //Crear Cliente
-    public boolean crearCliente(String nombres, String apellidos, String documento) {
+    public boolean crearCliente(String nombres, String apellidos, String documento, String tipo_cliente) {
         
-        String sql = "INSERT INTO cliente (nombres_cliente, apellidos_clientes, documento_cliente, id_tipodocumento_cliente, id_ciudad, id_tipocliente, fecha_creacion_cliente) VALUES (?, ?, ?, 1, 1, 1, NOW())";
+        String sql = "INSERT INTO cliente (nombres_cliente, apellidos_clientes, documento_cliente, " + 
+                "id_tipodocumento_cliente, id_tipo_cliente) " + 
+                "VALUES (?, ?, ?, 1, 1, ?, NOW())";
         
         try (Connection c = ConexionBD.getConexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -105,6 +122,7 @@ public class ClienteDAO {
             ps.setString(1, nombres);
             ps.setString(2, apellidos);
             ps.setString(3, documento);
+            ps.setInt(4, obtenerIdTipoCliente(tipo_cliente));
             
             return ps.executeUpdate() > 0;
             
@@ -116,9 +134,10 @@ public class ClienteDAO {
     }
     
     //Modificar CLiente
-    public boolean modificarCliente(int id, String nombres, String apellidos, String documento) {
+    public boolean modificarCliente(int id, String nombres, String apellidos, String documento, String tipo_cliente) {
         
-        String sql = "UPDATE cliente SET nombres_cliente=?, apellidos_clientes=?, documento_cliente=? WHERE id_cliente=?";
+        String sql = "UPDATE cliente SET nombres_cliente=?, apellidos_clientes=?, documento_cliente=?, " + 
+                "id_tipo_cliente=? WHERE id_cliente=?";
         
         try (Connection c = ConexionBD.getConexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -126,7 +145,9 @@ public class ClienteDAO {
             ps.setString(1, nombres);
             ps.setString(2, apellidos);
             ps.setString(3, documento);
-            ps.setInt(4, id);
+            ps.setInt(4, obtenerIdTipoCliente(tipo_cliente));
+            ps.setInt(5, id);
+            
             
             return ps.executeUpdate() > 0;
             
@@ -136,16 +157,25 @@ public class ClienteDAO {
         }
     }
     // OBTENER CLIENTE POR ID (ÚTIL PARA CARGAR FORMULARIO)
-    public ResultSet obtenerClientePorId(int id) {
+    public Cliente obtenerClientePorId(int id) {
 
         String sql = "SELECT * FROM cliente WHERE id_cliente=?";
 
-        try {
-            Connection c = ConexionBD.getConexion();
-            PreparedStatement ps = c.prepareStatement(sql);
-            ps.setInt(1, id);
+        try (Connection c = ConexionBD.getConexion();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
-            return ps.executeQuery();
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                return new Cliente(
+                        rs.getInt("id_cliente"),
+                        rs.getString("nombres_cliente"),
+                        rs.getString("apellidos_clientes"),
+                        rs.getString("documento_cliente")
+                );
+            }
 
         } catch (Exception e) {
             System.err.println("Error obtenerClientePorId: " + e.getMessage());
@@ -169,4 +199,60 @@ public class ClienteDAO {
             return false;
         }
     }
+    
+    public List<String> listarTipoCliente() {
+        List<String> lista = new ArrayList<>();
+
+        String sql = "SELECT tipo_cliente FROM tipo_cliente";
+
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(rs.getString("tipo_cliente"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error cargando materiales: " + e.getMessage());
+        }
+        return lista;
+    }
+    
+    private int obtenerIdTipoCliente(String tipo) {
+
+        String sql = "SELECT id_tipocliente FROM tipo_cliente WHERE tipo_cliente=?";
+
+        try (Connection c = ConexionBD.getConexion();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, tipo);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) return rs.getInt(1);
+
+        } catch (Exception e) {
+            System.out.println("Error obteniendo id tipo cliente: " + e.getMessage());
+        }
+
+        return 1; // por defecto
+    }
+    public void llenarComboTipoCliente(JComboBox<String> combo) {
+        String sql = "SELECT tipo_cliente FROM tipo_cliente";
+
+        try (Connection c = ConexionBD.getConexion();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            combo.removeAllItems();  // Limpia el combo
+
+            while (rs.next()) {
+                combo.addItem(rs.getString("tipo_cliente"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error llenarComboTipoCliente: " + e.getMessage());
+        }
+    }
+    
 }

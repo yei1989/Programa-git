@@ -4,8 +4,10 @@
  */
 package model;
 
-
-
+/**
+ *
+ * @author PORTATIL
+ */
 public class Cliente {
     
     private int id;
@@ -25,4 +27,6 @@ public class Cliente {
     public String getNombres() { return nombres; }
     public String getApellidos() { return apellidos; }
     public String getDocumento() { return documento; }
+
+    
 }

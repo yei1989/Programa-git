@@ -19,7 +19,8 @@ public class PanelClientes extends javax.swing.JPanel {
 
     private JTable tabla;
     private DefaultTableModel modelo;
-    private JTextField txtBuscar, txtNombres, txtApellidos, txtDocumento; 
+    private JTextField txtBuscar, txtNombres, txtApellidos, txtDocumento;
+    private JComboBox<String> cbTipoCliente;
     private JButton btnCrear, btnBuscar, btnModificar, btnGuardar, btnEliminar;
     private ClienteDAO clienteDAO;
     private String modoActual = "";
@@ -83,6 +84,18 @@ public class PanelClientes extends javax.swing.JPanel {
         txtDocumento.setBounds(100, 60, 200, 25);
         panelForm.add(txtDocumento);
         
+        //caja tipo cliente
+        
+        JLabel lblTipoCliente = new JLabel("Tipo Cliente:");
+        lblTipoCliente.setBounds(320, 60, 120, 25);
+        panelForm.add(lblTipoCliente);
+
+        cbTipoCliente = new JComboBox<>();
+        cbTipoCliente.setBounds(410, 60, 200, 25);
+        panelForm.add(cbTipoCliente);
+        
+        cargarTipoCliente();
+        
         JPanel panelFormDos = new JPanel(null);
         panelFormDos.setBounds(20, 70, 760, 130);
         panelFormDos.setBorder(BorderFactory.createTitledBorder("Clientes"));
@@ -127,8 +140,8 @@ public class PanelClientes extends javax.swing.JPanel {
                         
                         txtNombres.getText(),
                         txtApellidos.getText(),
-                        txtDocumento.getText()
-                        
+                        txtDocumento.getText(),
+                        cbTipoCliente.getSelectedItem().toString()
                 );        
                 if (ok) {
                     JOptionPane.showMessageDialog(this, "Cliente creado");
@@ -143,7 +156,8 @@ public class PanelClientes extends javax.swing.JPanel {
                             id, 
                             txtNombres.getText(), 
                             txtApellidos.getText(), 
-                            txtDocumento.getText()
+                            txtDocumento.getText(),
+                            cbTipoCliente.getSelectedItem().toString()
                             
                     );
                     if (ok) {
@@ -155,10 +169,9 @@ public class PanelClientes extends javax.swing.JPanel {
             } else if (modoActual.equals("CLI_CONS")) {
                 String criterio = txtBuscar.getText();
                 DefaultTableModel dm = clienteDAO.buscarClientesTableModel(criterio);
-                if (dm != null) {
-                    tabla.setModel(dm);
-                    modelo = dm;
-                }
+                tabla.setModel(dm);
+                modelo = dm;
+                
             }
         });
         
@@ -221,6 +234,8 @@ public class PanelClientes extends javax.swing.JPanel {
         txtNombres.setEnabled(editable);
         txtApellidos.setEnabled(editable);
         txtDocumento.setEnabled(editable);
+        cbTipoCliente.setEnabled(editable);
+        
         txtBuscar.setEnabled(mode.equals("CLI_CONS"));
 
         if (mode.equals("CLI_CREAR")) {
@@ -239,17 +254,28 @@ public class PanelClientes extends javax.swing.JPanel {
         txtApellidos.setText("");
         txtDocumento.setText("");
         txtBuscar.setText("");
+        
     }
 
     public void loadData() {
         DefaultTableModel dm = clienteDAO.listarClientesTableModel();
-        if (dm != null) {
-            tabla.setModel(dm);
-            modelo = dm;
-        }
-    
-    
+        tabla.setModel(dm);
+        modelo = dm;
+           
     }
+    
+    private void cargarTipoCliente() {
+        cbTipoCliente.removeAllItems();
+
+        java.util.List<String> lista = clienteDAO.listarTipoCliente();
+
+        for (String t : lista) {
+            cbTipoCliente.addItem(t);
+        }
+    }
+
+    
+   
 
     
     @SuppressWarnings("unchecked")
